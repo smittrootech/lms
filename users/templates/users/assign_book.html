@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+
+{% extends "users/base.html" %}
+
+{% block content %}
+
 <html>
 
 <head>
@@ -154,7 +159,7 @@
                             'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
                         },
                         success: function(data) {
-                            alert("book_id assigned to Successfully")
+                            alert("book assigned Successfully")
                             location.reload(); 
                             
                         },
@@ -240,19 +245,9 @@
             
         }
             
-                        
 
-                        
-
-                    
-        
-                    
-        
-
-    
-    
-
-
-    
- 
 </script>
+
+{% endblock content %}
+
+

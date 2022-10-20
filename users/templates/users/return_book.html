@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+
+{% extends "users/base.html" %}
+
+{% block content %}
+
 <html>
 
 <head>
@@ -26,12 +31,7 @@
             </div>
             <div id ="return_button">
             </div>
-            <div id="overdue_books">
-                <div class="btn-group" role="group" aria-label="overdue_books">
-
-                </div>
-            </div>
-            <div id ="pay_button">
+            <div id ="notification" class="text-center">
             </div>
             
             
@@ -113,60 +113,75 @@
                         'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
                     },
                     success: function(data,status, xhr) {
-                        $("#book_detail").html(`<div class="form-group">
-                            <label for="books">Books</label>
-                            <select class="form-control"  id="book" name="book" placeholder="Select book">
-                            <option selected>Select Book</option>
-                            </select>
-                        </div>
-                        `
-                        )
-                        
-                       data.map((e,i) => {
-                            $.ajax({
-                                dataType: "json",
-                                url: 'http://127.0.0.1:8000/lms/book_detail/'+e.book +'/',
-                                headers:{         
-                                    'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
-                                },
-                                success: function(data,status, xhr) {
-                                    $("#book").append( `<option id= ${e.book}>${data.title}</option>`)
-                                    $("#book").change(function(){
-                                        $("#return_button").html(
-                                            `
-                                            <div class="text-center" class="form-group">
-                                                <button class="btn btn-info" type="button"  id ='book_return' >Return</button>
-                                            </div> `
-                                        )
-                                            bk_id = $(this).children(":selected").attr("id")
-                                            $("#book_return").click(function(){
-                                                return_book_detail={borrower:usr_id,book:bk_id,status:"RETURNED"}
-                                                $.ajax({
-                                                    type:"PUT",
-                                                    dataType: "json",
-                                                    data: return_book_detail,
-                                                    url: 'http://127.0.0.1:8000/lms/borrower_entry/'+usr_id+'/',
-                                                    headers:{         
-                                                        'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
-                                                    }, 
-                                                    success: function(data){
-                                                        console.log(data)
+
+                        if ((data.length)!= 0){
+                                    $("#book_detail").html(`<div class="form-group">
+                                        <label for="books">Books</label>
+                                        <select class="form-control"  id="book" name="book" placeholder="Select book">
+                                        <option selected>Select Book</option>
+                                        </select>
+                                    </div>
+                                    `
+                                    )
+                       
+                       
+                                    data.map((e,i) => {
+                                            $.ajax({
+                                                dataType: "json",
+                                                url: 'http://127.0.0.1:8000/lms/book_detail/'+e.book +'/',
+                                                headers:{         
+                                                    'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                                                },
+                                                success: function(data,status, xhr) {
+                                                    $("#book").append( `<option id= ${e.book}>${data.title}</option>`)
+                                                    $("#book").change(function(){
+                                                        $("#return_button").html(
+                                                            `
+                                                            <div class="text-center" class="form-group">
+                                                                <button class="btn btn-info" type="button"  id ='book_return' >Return</button>
+                                                            </div> `
+                                                        )
+                                                            bk_id = $(this).children(":selected").attr("id")
+                                                            $("#book_return").click(function(){
+                                                                return_book_detail={borrower:usr_id,book:bk_id,status:"RETURNED"}
+                                                                $.ajax({
+                                                                    type:"PUT",
+                                                                    dataType: "json",
+                                                                    data: return_book_detail,
+                                                                    url: 'http://127.0.0.1:8000/lms/borrower_entry/'+usr_id+'/',
+                                                                    headers:{         
+                                                                        'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                                                                    }, 
+                                                                    success: function(data){
+                                                                        alert("Book returned sucessfully")
+                                                                    },
+                                                                    error: function() {
+                                                                        alert('Error')
+                                                                    }
+
+
+                                                                    })
+                                                            
+                                                                })  
+                                                        })
                                                     },
-                                                    error: function() {
-                                                        alert('Error')
-                                                    }
-
-
-                                                    })
-                                            
-                                                })  
+                                                error: function() {
+                                                    alert('Error')
+                                                }
+                                            })
                                         })
-                                    },
-                                error: function() {
-                                    alert('Error')
-                                }
-                            })
-                        })   
+                                 }  
+                            else{
+
+                                    $("#notification").html(`
+                                        <div class="form-group">
+                                            <h3 style="color:darkblue;" >No books are assigned to this user</h3>
+                                        </div>
+                                        `
+                              )
+
+                            }
+                                 
                         
                     },
                     error: function() {
@@ -175,12 +190,6 @@
                     })
             
             })
-                
-            
-     
-          
-        
 
-    
- 
 </script>
+{% endblock content %}

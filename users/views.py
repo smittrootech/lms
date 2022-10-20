@@ -14,11 +14,12 @@ from rest_framework import generics
 from base import Constants
 from .models import User
 from .serializers import MyTokenObtainPairSerializer,RegisterSerializer
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db.models import Sum
 from django.views.generic import TemplateView,ListView
-from django.contrib.auth.decorators import permission_required
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 
 
@@ -90,8 +91,16 @@ class ReturnBookView(TemplateView):
     template_name = "users/return_book.html"
 
 
-
-
+class LogoutView(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request):
+        # try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        # except Exception as e:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class BookDetail(viewsets.ViewSet):
@@ -349,3 +358,4 @@ class DuePayment(generics.ListCreateAPIView):
             return Response(serializer.data)
         except Borrower_Details.DoesNotExist:
             raise Http404
+

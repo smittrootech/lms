@@ -2,7 +2,7 @@
 from django.urls import path
  # importing views from views..py
 from .views import BookDetail, OverduepaymentList,StudentDetail,BorrowedDetail,AssignedBooks,IssuingBook,AllBooksDetail,Overduepayment,OverduepaymentList,AuditReportList,MyObtainTokenPairView,RegisterView,DuePayment,LoginView\
-                   ,BookDetailView,Register,DetailedStudentView,ReturnBookView
+                   ,BookDetailView,Register,DetailedStudentView,ReturnBookView,LogoutView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -25,9 +25,8 @@ urlpatterns = [
     path('loginview/', LoginView.as_view(),name='loginview'),
     path('bookview/', BookDetailView.as_view(),name='BookDetailView'),
     path('register_user/', Register.as_view(),name='Register'),
-    path('student_detail_view/', DetailedStudentView.as_view(),name='Register'),
-    path('return_book/', ReturnBookView.as_view(),name='return'),
-    
-    
-    
+    path('student_detail_view/', DetailedStudentView.as_view(),name='book_assignment'),
+    path('return_book/', ReturnBookView.as_view(),name='book_return'),
+    path('logout/', LogoutView.as_view(), name='auth_logout'),
+ 
 ]   
