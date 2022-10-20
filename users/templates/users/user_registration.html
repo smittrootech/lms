@@ -77,7 +77,7 @@
             url: 'http://127.0.0.1:8000/lms/register/',
             data: $('#registration').serialize(),
             success: function(data) {
-                console.log(data)      
+                window.location="http://127.0.0.1:8000/lms/loginview/" 
             },
             error: function() {
                 alert('Error');

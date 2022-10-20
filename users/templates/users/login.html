@@ -50,7 +50,7 @@ $("#loginForm").submit(function(event)
         {
             localStorage.setItem("accessToken",result['access'])
             localStorage.setItem("RefreshToken",result['refresh'])
-            localStorage.setItem("email",result['email'])
+            localStorage.setItem("email",$('#email').val())
             if(result)
             {
                 window.location = 'http://127.0.0.1:8000/lms/bookview/'

@@ -1,5 +1,6 @@
 from calendar import c
 from django.shortcuts import get_object_or_404
+
 from rest_framework.permissions import IsAdminUser
 from django.utils import timezone
 from users.permission import ReadOnly
@@ -19,6 +20,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db.models import Sum
 from django.views.generic import TemplateView,ListView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import logout
+
 
 
 
@@ -78,6 +81,7 @@ class BookDetailView(TemplateView):
     def get_context_data(self,*args, **kwargs):
         context = super(BookDetailView, self).get_context_data(*args,**kwargs)
         staff=User.objects.filter(is_staff=True)
+        print(self.request.user.id)
         context['user']=[i.email for i in staff]
         return context
 
@@ -90,6 +94,16 @@ class DetailedStudentView(TemplateView):
 class ReturnBookView(TemplateView):
     template_name = "users/return_book.html"
 
+# class BaseViewSet(TemplateView):
+
+#     template_name ="users/base.html"
+
+#     def get_context_data(self,*args, **kwargs):
+#         context = super(BaseViewSet, self).get_context_data(*args,**kwargs)
+#         print(self.request.user)
+#         return context
+
+
 
 class LogoutView(APIView):
     permission_classes = (AllowAny,)
@@ -98,6 +112,7 @@ class LogoutView(APIView):
             refresh_token = request.data["refresh_token"]
             token = RefreshToken(refresh_token)
             token.blacklist()
+            logout(request)
             return Response(status=status.HTTP_205_RESET_CONTENT)
         # except Exception as e:
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
