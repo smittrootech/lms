@@ -1,0 +1,70 @@
+<html>
+
+</head>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<title>Login</title>
+
+</head>
+
+<body>
+<div class="container" >
+    <h3 class="text-center" >User Login</h3>
+    <form id="loginForm"accept-charset="utf-8">
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+        </div>
+        <div class="text-center" class="form-group">
+            <button class="btn btn-info" type="submit"  id ='register' name="submit" >Login</button>
+        </div>
+
+        <p class="text-center text-muted mt-5 mb-0">Not registered yet? <a href="{% url 'Register' %}"
+            class="fw-bold text-body"> <u>register here</u></a></p>
+       
+    
+    </form>
+<div>
+<script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script>
+$("#loginForm").submit(function(event)
+{
+    event.preventDefault();
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/lms/login/",
+        data:({
+            email : $('#email').val(),
+            password: $('#password').val()
+        }),
+        success: function(result)
+        {
+            localStorage.setItem("accessToken",result['access'])
+            localStorage.setItem("RefreshToken",result['refresh'])
+            localStorage.setItem("email",result['email'])
+            if(result)
+            {
+                window.location = 'http://127.0.0.1:8000/lms/bookview/'
+            }
+            
+        },
+        error: function() {
+            alert("please enetr valid credentials or register your self")
+
+        },
+    });
+    //return false;
+});
+</script>
+</body>
+</html>
+

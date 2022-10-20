@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Book List    </title>
+</head>
+
+<body>
+    <table class="table" id="html-data-table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Total Copies</th>
+            <th scope="col">Current Copies</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"><button type="button" class="btn btn-info" id ="create">Create</button></th>
+          </tr>
+        </thead>
+        <tbody id="html-data-body">
+          
+        </tbody>
+      
+
+      </table>
+      <div class ="tb" id="new">
+
+      </div> 
+
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    
+
+<script>
+    
+
+
+    function modal_html_put(e){
+        return `<div class="modal fade modal-${e.id}-xl" id="modalLoginForm_${e.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">Update Book Detail</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <form id ="updateform">
+                        <div class="modal-body mx-10">
+                        <div class="md-form mb-5">
+                            <i class="fa fa-envelope prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="defaultForm-title" ">title</label>
+                            <input type="title" id="defaultForm-title" class="form-control validate" name ="title" value=${e.title}>
+                        </div>
+                        <div class="md-form mb-5">
+                            <i class="fa fa-envelope prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="defaultForm-no_of_copies_actual" ">no_of_copies_actual</label>
+                            <input type="text" id="defaultForm-no_of_copies_actual" class="form-control validate" name= "no_of_copies_actual" value=${e.no_of_copies_actual}>
+                        </div>
+                        <div class="md-form mb-5">
+                            <i class="fa fa-envelope prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="defaultForm-no_of_copies_current" ">no_of_copies_current</label>
+                            <input type="text" id="defaultForm-no_of_copies_current" class="form-control validate" name="no_of_copies_current" value=${e.no_of_copies_current}>
+                        </div>
+                        <div class="md-form mb-5">
+                            <i class="fa fa-envelope prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="defaultForm-publication_year" ">publication_year</label>
+                            <input type="date" id="defaultForm-publication_year" class="form-control validate" name = "publication_year" value=${e.publication_year}>
+                        </div>
+                        <div class="md-form mb-5">
+                            <i class="fa fa-envelope prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="defaultForm-language" ">language</label>
+                            <input type="text" id="defaultForm-language" class="form-control validate" name="language" value=${e.language}>
+                        </div>
+                        <div class="md-form mb-5">
+                            <i class="fa fa-envelope prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="defaultForm-category" ">category</label>
+                            <input type="text" id="defaultForm-category" class="form-control validate" name="category" value=${e.category}>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-center">
+                            <button class="btn btn-success" type="submit" value="edit_data" id ='update_${e.id}' >Update</button>
+                        </div>
+                        </div>
+                        
+                        </form>
+                        
+                    </div>
+                    </div>
+                </div>`
+            }
+
+            function modal_html_post(){
+                return `<div class="modal fade modal-xl" id="modalpostform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header text-center">
+                                <h4 class="modal-title w-100 font-weight-bold">Create Book Detail</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <form id ="postform">
+                                <div class="modal-body mx-10">
+                                <div class="md-form mb-5">
+                                    <i class="fa fa-envelope prefix grey-text"></i>
+                                    <label data-error="wrong" data-success="right" for="defaultForm-title" ">title</label>
+                                    <input type="title" id="defaultForm-title" class="form-control validate" name ="title" value="">
+                                </div>
+                                <div class="md-form mb-5">
+                                    <i class="fa fa-envelope prefix grey-text"></i>
+                                    <label data-error="wrong" data-success="right" for="defaultForm-no_of_copies_actual" ">no_of_copies_actual</label>
+                                    <input type="text" id="defaultForm-no_of_copies_actual" class="form-control validate" name= "no_of_copies_actual" value="">
+                                </div>
+                                <div class="md-form mb-5">
+                                    <i class="fa fa-envelope prefix grey-text"></i>
+                                    <label data-error="wrong" data-success="right" for="defaultForm-no_of_copies_current" ">no_of_copies_current</label>
+                                    <input type="text" id="defaultForm-no_of_copies_current" class="form-control validate" name="no_of_copies_current" value="">
+                                </div>
+                                <div class="md-form mb-5">
+                                    <i class="fa fa-envelope prefix grey-text"></i>
+                                    <label data-error="wrong" data-success="right" for="defaultForm-publication_year" ">publication_year</label>
+                                    <input type="date" id="defaultForm-publication_year" class="form-control validate" name = "publication_year" value="">
+                                </div>
+                                <div class="md-form mb-5">
+                                    <i class="fa fa-envelope prefix grey-text"></i>
+                                    <label data-error="wrong" data-success="right" for="defaultForm-language" ">language</label>
+                                    <input type="text" id="defaultForm-language" class="form-control validate" name="language" value="">
+                                </div>
+                                <div class="md-form mb-5">
+                                    <i class="fa fa-envelope prefix grey-text"></i>
+                                    <label data-error="wrong" data-success="right" for="defaultForm-category" ">category</label>
+                                    <input type="text" id="defaultForm-category" class="form-control validate" name="category" value="">
+                                </div>
+                                <div class="modal-footer d-flex justify-content-center">
+                                    <button class="btn btn-success" type="submit" id ='create_modal' >Create</button>
+                                </div>
+                                </div>
+
+                                </form>
+                            </div>
+                            </div>
+                        </div>`
+                    }
+
+    $("#create").click(function(){
+            var label=modal_html_post()
+            $("#new").append(label)
+            $("#modalpostform").modal('toggle');
+            $("#create_modal").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: 'http://127.0.0.1:8000/lms/book_list/',
+                    data: $('#postform').serialize(),
+                    headers:{         
+                        'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                    },
+                    success: function(data) {
+                        console.log(data)
+                        location.reload(); 
+                        
+                    },
+                    error: function() {
+                        alert('Not allowed to create book inventory');
+                    },
+                    
+                });
+                return false;
+
+            })
+        });
+
+     fetch('http://127.0.0.1:8000/lms/book_list/')
+    .then(function (response) {
+        return response.json();
+    }).then(function (apiJsonData) {
+        console.log(apiJsonData);
+        renderDataInTheTable(apiJsonData);        
+    })
+    
+    function renderDataInTheTable(apiJsonData){
+        if (apiJsonData.length>0){
+            $("#html-data-body").html(
+                apiJsonData.map((e, i)=>{
+                    return `
+                    <tr>
+                        <td>${e.title}</td>
+                        <td>${e.no_of_copies_actual}</td>
+                        <td>${e.no_of_copies_current}</td>
+                            <td><button type="button" class="btn btn-primary" id ="edit_${e.id}" data-toggle="modal" data-target=".update-modal-${e.id}">Edit</button></td>
+                            <td><button type="button" class="btn btn-danger" id ="delete_${e.id}">Delete</button></td>
+                        
+                        </tr>
+                    `        
+                })
+            )
+        }
+
+        apiJsonData.map((e, i,)=>{
+            $("#delete_"+e.id).click(function () {
+                $.ajax({
+                    type: 'DELETE',
+                    dataType:"json",
+                    url: 'http://127.0.0.1:8000/lms/book_detail/'+e.id +'/',
+                    
+                    headers:{         
+                        'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                    },
+                    success: function (data, status, xhr) {
+                      console.log('data: ', data);
+                      location.reload();
+                    },
+                    error: function(){
+                        alert("Not allowed to delete book details")
+                    }
+                  });
+      
+            });
+        })
+        
+        apiJsonData.map((e, i)=>{
+        $("#edit_"+e.id).click(function () {
+            $.ajax({
+                dataType:"json",
+                url: 'http://127.0.0.1:8000/lms/book_detail/'+e.id +'/',
+                
+                headers:{         
+                    'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                },
+                success: function (data, status, xhr) {
+                var label=modal_html_put(e)
+
+            $('#new').append(label);
+            $("#modalLoginForm_"+e.id).modal();
+
+            $("#update_"+e.id).click(function() {
+                $.ajax({
+                    type: "PUT",
+                    url: 'http://127.0.0.1:8000/lms/book_detail/'+e.id +'/',
+                    data: $('#updateform').serialize(),
+                    headers:{         
+                        'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                    },
+                    success: function(data) {
+                        $("#modalLoginForm_"+e.id).modal('toggle');
+                        location.reload(); 
+                        
+                    },
+                    error: function() {
+                        alert('Not allowed to update book detail');
+                    },     
+                });
+                return false;
+            });
+            }
+            });
+            
+        })
+    })
+        
+    }  
+    
+ 
+</script>
+
+</body>
+
+</html>

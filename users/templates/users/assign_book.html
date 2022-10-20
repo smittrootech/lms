@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>New Book Assignment </title>
+</head>
+
+<body>
+    
+
+    <div class="container">
+        <h3 class="text-center" >New Book Assignment</h3>
+    
+        <form id = "book_assignment">
+            
+            <div class="form-group">
+              <label for="email">Email</label>
+              <select class="form-control"  id="email" name="email" placeholder="Choose user's email">
+              <option selected>Select Student</option>
+              </select>
+            </div>
+            <div id="dynamic_student_detail"></div>
+            <div id ="book_detail">
+            </div>
+            <div id ="overdue_payment">
+            </div>
+            <div id ="assign_button">
+            </div>
+            <div id="overdue_books">
+                <div class="btn-group" role="group" aria-label="overdue_books">
+
+                </div>
+            </div>
+            <div id ="pay_button">
+            </div>
+            
+            
+        </form>
+        
+    </div>
+    
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    
+
+
+
+
+</body>
+
+</html>
+    
+<script>
+    fetch('http://127.0.0.1:8000/lms/student_list/')
+    .then(function (response) {
+        return response.json();
+    }).then(function (apiJsonData) {
+        renderDataInTheTable(apiJsonData);        
+    })
+
+    var user_id=""
+    var book_id=""
+    var overdue_book_id=""
+
+    function renderDataInTheTable(apiJsonData){
+        if (apiJsonData.length>0){
+                apiJsonData.map((e, i)=>{
+                    $("#email").append( `<option id=${e.id}>${e.email}</option>`)
+                })
+            }
+        }
+
+
+        $("#email").change(function(){
+            user_id = $(this).children(":selected").attr("id")
+
+            $.ajax({
+                dataType: "json",
+                url: 'http://127.0.0.1:8000/lms/student_detail/'+$('#email').val()+'/',
+                headers:{         
+                    'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                },
+                success: function(data,status, xhr) {
+                    $("#dynamic_student_detail").html(`
+                            <div class="form-group">
+                                <label for="first_name">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name"disabled  value=${data.first_name} >
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" disabled value=${data.last_name} >
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contact_number">Contact Number</label>
+                                <input type="text" class="form-control" id="contact_number" name="contact_number" disabled value=${data.contact_number} >
+                            </div>
+                    `);    
+                    
+                },
+                error: function() {
+                    alert('Error')
+                    }
+                })
+            })
+                
+
+        fetch('http://127.0.0.1:8000/lms/book_list/')
+            .then(function (response) {
+                return response.json();
+            }).then(function (apiJsonData) {
+                renderBookData(apiJsonData);        
+            })
+
+          
+        function renderBookData(apiJsonData){
+            if (apiJsonData.length>0){
+                        $("#book_detail").html(`<div class="form-group">
+                            <label for="books">Books</label>
+                            <select class="form-control"  id="book" name="book" placeholder="Select book">
+                            <option selected>Select Book</option>
+                            </select>
+                        </div>
+                        `)
+                    apiJsonData.map((e, i)=>{
+                        $("#book").append( `<option id= ${e.id}>${e.title}</option>`)
+                    })
+                }   
+
+                    $("#book").change(function(){
+                        $("#assign_button").html(
+                            `
+                            <div class="text-center" class="form-group">
+                                <button class="btn btn-info" type="button"  id ='book_assign' >Assign</button>
+                            </div> `
+                        )
+                    book_id = $(this).children(":selected").attr("id")
+            
+
+                $("#book_assign").click(function(){
+
+                    data ={borrower:user_id,book:book_id}
+                    $.ajax({
+                        type: "POST",
+                        url: 'http://127.0.0.1:8000/lms/borrower_entry/',
+                        data: data,
+                        headers:{         
+                            'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                        },
+                        success: function(data) {
+                            location.reload(); 
+                            
+                        },
+                        error: function(data) {
+                            alert(data.responseJSON.error || "");
+                            if (data.responseJSON.error=="Overdued books"){
+
+                                $.ajax({
+                                    type: "GET",
+                                    url: 'http://127.0.0.1:8000/lms/duepayment/'+user_id+'/',
+                                    headers:{         
+                                        'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                                    },
+                                    success: function(data) {
+                                            overdue_book_id=data.book_id
+
+
+                                            data.books.forEach(function(book) {
+                                                $("#overdue_books").append(
+                                                    `
+                                                        <button type="button" id ="overdue_book" class="btn btn-secondary disabled">${book}</button>
+                                        
+                                                    `
+                                                )
+                                            });
+
+                                            $("#overdue_payment").html(                                         
+                                            `
+                                            <div class="form-group">
+                                                <label for="contact_number">Payment Overdue</label>
+                                                <input type="text" class="form-control" id="payment_ovderdue" name="payment_ovderdue" disabled value=${data.amount_to_be_paid} >
+                                            </div>
+                                            `
+                                        )
+                                        
+                                    },
+                                    error: function(data) {
+                                    }
+                                })
+
+                                $('#assign_button').remove();
+                                $("#pay_button").html(
+                                    `
+                                    <div class="text-center" class="form-group">
+                                        <button class="btn btn-info" type="button"  id ='due_payment' >Pay</button>
+                                    </div> `
+                                )
+                                $("#due_payment").click(function(){
+
+                                    
+                                    overdue_book_id.forEach(function(id) {
+                                            response_data={borrower:user_id,amount_paid:true}
+                                            
+                                            $.ajax({
+                                                type: "PUT",
+                                                url: 'http://127.0.0.1:8000/lms/overdue_list/'+user_id +'/'+id+'/',
+                                                data: response_data,
+                                                headers:{         
+                                                    'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                                                },
+                                                success: function(data) {
+                                                    alert("Payment Successful")
+                                                    location.reload();
+                                                    
+                                                },
+                                                error: function() {
+                                                    alert('Payment unsucsessful');
+                                                },     
+                                            });
+                                            return false;
+
+                                        })
+                                
+
+                                    })
+
+                            }
+                        },
+                        
+                    });
+                })
+            })
+            
+        }
+            
+                        
+
+                        
+
+                    
+        
+                    
+        
+
+    
+    
+
+
+    
+ 
+</script>
