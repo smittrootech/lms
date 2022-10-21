@@ -1,6 +1,7 @@
 from calendar import c
 from django.shortcuts import get_object_or_404
-
+from django.core.mail import BadHeaderError, send_mail
+from django.http import HttpResponse, HttpResponseRedirect
 from rest_framework.permissions import IsAdminUser
 from django.utils import timezone
 from users.permission import ReadOnly
@@ -12,6 +13,7 @@ from rest_framework import status, serializers
 from .serializers import BookDetailsSerializers, DuePaymentSerializer,IssuingbookSerialzer, PaymentSerializer,StudentsbookSerialzer,AuditReportSerializer
 from rest_framework import status, viewsets
 from rest_framework import generics
+from rest_framework.decorators import api_view
 from base import Constants
 from .models import User
 from .serializers import MyTokenObtainPairSerializer,RegisterSerializer
@@ -21,13 +23,6 @@ from django.db.models import Sum
 from django.views.generic import TemplateView,ListView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import logout
-
-
-
-
-
-
-
 
 class MyObtainTokenPairView(TokenObtainPairView):
     permission_classes = (AllowAny,)
@@ -374,3 +369,20 @@ class DuePayment(generics.ListCreateAPIView):
         except Borrower_Details.DoesNotExist:
             raise Http404
 
+
+@api_view(('POST',))
+def send_email(request):
+    subject = request.POST.get('subject', '')
+    message = request.POST.get('message', '')
+    # from_email = request.POST.get('from_email', '')
+
+    to_email = request.POST.getlist('to_email', '')
+    to_email=list(to_email)
+    if subject and message and to_email:
+        try:
+            send_mail(subject, message, 'smitkumar.patel@trootech,com', to_email)
+        except BadHeaderError:
+            return Response({"detail":'Invalid header found.'})
+        return Response({"detail":"mail sent"})
+    else:
+        return Response({"detail":'Make sure all fields are entered and valid.'})

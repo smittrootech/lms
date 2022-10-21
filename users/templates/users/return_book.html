@@ -64,6 +64,7 @@
 
     var usr_id=""
     var bk_id=""
+    var user_email=""
    
 
     function renderDataInTheTable(apiJsonData){
@@ -77,6 +78,7 @@
 
         $("#email").change(function(){
             usr_id = $(this).children(":selected").attr("id")
+            user_email=$('#email').val()
             $.ajax({
                 dataType: "json",
                 url: 'http://127.0.0.1:8000/lms/student_detail/'+$('#email').val()+'/',
@@ -154,6 +156,26 @@
                                                                     }, 
                                                                     success: function(data){
                                                                         alert("Book returned sucessfully")
+                                                                        subject="you have sucessfully returned the book"
+
+                                                                        to_email=user_email
+                                                                        mail_data={subject:"Book returned",message:"you have Successfully returned the book",to_email:to_email}
+                                                                        $.ajax({
+                                                                            type:"POST",
+                                                                            dataType: "json",
+                                                                            data: mail_data,
+                                                                            url: 'http://127.0.0.1:8000/lms/send_mail/',
+                                                                            headers:{         
+                                                                                'Authorization' : 'Bearer ' + localStorage.getItem("accessToken"),
+                                                                            }, 
+                                                                            success: function(data){
+                                                                                console.log("mail_sent")
+                                                                            },
+                                                                            error: function(){
+                                                                                console.log("error")
+                                                                            }
+                                                                            
+                                                                        })
                                                                     },
                                                                     error: function() {
                                                                         alert('Error')

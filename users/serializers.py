@@ -166,8 +166,6 @@ class IssuingbookSerialzer(serializers.ModelSerializer):
     
 class PaymentSerializer(serializers.ModelSerializer):
     amount_paid=serializers.BooleanField(default=False,write_only=True)
-    
-
 
     def update(self, instance, validated_data):
         book=Book_Details.objects.filter(title=instance.book.title).first()
