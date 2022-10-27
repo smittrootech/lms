@@ -10,7 +10,7 @@ from django.http import Http404, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, serializers
-from .serializers import BookDetailsSerializers, DuePaymentSerializer,IssuingbookSerialzer, PaymentSerializer,StudentsbookSerialzer,AuditReportSerializer
+from .serializers import BookDetailsSerializers, BorrowerSerailizer, DuePaymentSerializer,IssuingbookSerialzer, PaymentSerializer,StudentsbookSerialzer,AuditReportSerializer
 from rest_framework import status, viewsets
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -23,6 +23,8 @@ from django.db.models import Sum
 from django.views.generic import TemplateView,ListView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import logout
+from django.core.paginator import Paginator
+
 
 class MyObtainTokenPairView(TokenObtainPairView):
     permission_classes = (AllowAny,)
@@ -112,6 +114,21 @@ class LogoutView(APIView):
         # except Exception as e:
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
+from rest_framework.pagination import PageNumberPagination
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 2
+    page_size_query_param = 'page_size'
+    page_query_param = 'p'
+    max_page_size = 1000
+
+    def get_paginated_response(self, data):
+        response = Response(data)
+        response['count'] = self.page.paginator.count
+        response['next'] = self.get_next_link()
+        response['previous'] = self.get_previous_link()
+        return response
+
 
 class BookDetail(viewsets.ViewSet):
     """
@@ -121,8 +138,11 @@ class BookDetail(viewsets.ViewSet):
 
     def list(self, request):
         queryset = Book_Details.objects.all()
-        serializer = BookDetailsSerializers(queryset, many=True)
-        return Response(serializer.data)
+        pagination_class=StandardResultsSetPagination
+        paginator = pagination_class()
+        objects = paginator.paginate_queryset(queryset , request)
+        serializer = BookDetailsSerializers(objects, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def create(self, request):
         # queryset = Book_Details.objects.all()
@@ -190,28 +210,15 @@ class AssignedBooks(APIView):
 
     permission_classes = [IsAdminUser|ReadOnly]
 
-    def get_object(self,pk,books):
+
+    def get(self,request):
         try:
-            print(Borrower_Details.objects.filter(id=pk).filter(book__title=books))
-            return Borrower_Details.objects.filter(id=pk).filter(book__title=books)
+            queryset=Borrower_Details.objects.filter(status=Borrower_Details.Status.ASSIGNED.name)
+            serializer = BorrowerSerailizer(queryset,many=True)
+            return Response(serializer.data)
         except Borrower_Details.DoesNotExist:
             raise Http404
 
-    def get(self,request,pk,books):
-        try:
-            queryset=self.get_object(pk,books)
-            serializer = StudentsbookSerialzer(queryset,many=True)
-            return Response(serializer.data)
-        except Borrower_Details.DoesNotExist:
-            raise Http404
-            
-    def put(self,request,pk,books):        
-        queryset=self.get_object(pk,books).first()
-        serializer = StudentsbookSerialzer(queryset,data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AllBooksDetail(APIView):

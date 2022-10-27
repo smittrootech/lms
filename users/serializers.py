@@ -82,9 +82,16 @@ class BookDetailsSerializers(serializers.ModelSerializer):
         fields = ['id','title','no_of_copies_actual','no_of_copies_current','publication_year','language','category']
 
 class BorrowerSerailizer(serializers.ModelSerializer):
+
+    email= serializers.SerializerMethodField()
+
+    def get_email(self,object):
+        if object:
+            return object.borrower.email
+
     class Meta:
         model = Borrower_Details
-        fields = '__all__'
+        fields = ['borrower','email']
 
 class StudentsbookSerialzer(serializers.ModelSerializer):
 

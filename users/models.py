@@ -72,7 +72,6 @@ class User(AbstractUser):
         ARTS = 'ARTS', _('ARTS')
 
 
-        
     username=None
     first_name= models.CharField(max_length=50)
     last_name= models.CharField(max_length=50)

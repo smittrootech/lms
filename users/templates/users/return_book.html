@@ -55,10 +55,11 @@
 </html>
     
 <script>
-    fetch('http://127.0.0.1:8000/lms/student_list/')
+    fetch('http://127.0.0.1:8000/lms/student_books/')
     .then(function (response) {
         return response.json();
     }).then(function (apiJsonData) {
+        console.log(apiJsonData)
         renderDataInTheTable(apiJsonData);        
     })
 
@@ -70,7 +71,7 @@
     function renderDataInTheTable(apiJsonData){
         if (apiJsonData.length>0){
                 apiJsonData.map((e, i)=>{
-                    $("#email").append( `<option id=${e.id}>${e.email}</option>`)
+                    $("#email").append( `<option id=${e.borrower}>${e.email}</option>`)
                 })
             }
         }
